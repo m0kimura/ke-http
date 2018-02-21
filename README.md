@@ -68,7 +68,7 @@ POST, GETモードでのHTTPリクエストを処理するクラス
 
 ## Install
 
-  npm install ke-server
+  npm install ke-http
 
 ## Licence
 
