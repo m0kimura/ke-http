@@ -1,6 +1,7 @@
 'use strict';
 const Hp=require('http');
 const Ur=require('url');
+const Cp=require('child_process');
 let keUtility=require('ke-utility');
 /**
  * @classdesc HTTPサーバークラス
@@ -100,5 +101,60 @@ module.exports=class keServer extends keUtility {
    */
   postProcess(me, ss, data){
     console.log(me, ss, data);
+  }
+  /**
+   * Curlインターフェイス
+   * @param  {String} method メソッド GET/POST
+   * @param  {String} url    url(https://abc.com)
+   * @param  {Object} data   データオブジェクト受け渡しデータ
+   * @param  {Object} op     オプション{debug: yes/just, header: , bearer: , basic:, type:}
+   * @return {Object}        返信
+   * @method
+   */
+  curl(method, url, path, data, op){
+    let ix, iy, b, c, cmd='curl -X '+method;
+    op=op||{}; op.charset=op.charset||'utf-8';
+    if(!op.type){
+      if(typeof(data)=='object'){op.type='json/application';}
+      else{op.type='text/plain';}
+    }
+    cmd+=' -H "'+'Content-Type: '+op.type+'; charset='+op.charset+'"';
+    for(ix in op){
+      switch(op[ix]){
+      case 'header':
+        for(iy in op[ix]){
+          cmd+=' -H "'+op[ix][iy]+'"';
+        }
+        break;
+      case 'bearer':
+        cmd+=' -H "authorization: Bearer '+op[ix]+'"';
+        break;
+      case 'basic':
+        b=new Buffer(op[ix]);
+        cmd+=' -H "Authorization:Basic '+b.toString('base64')+'"';
+        break;
+      }
+    }
+    if(method=='POST'){
+      if(typeof(data)=='object'){
+        cmd+=' -d \''+JSON.stringify(data)+'\'';
+      }else{
+        cmd+=' -d \''+data+'\'';
+      }
+    }
+    op.path=op.path||'/';
+    cmd+=' '+url+op.path;
+    if(method=='GET'){
+      if(typeof(data)=='object'){
+        c='?'; for(ix in data){cmd+=c+ix+'='+data[ix]; c='&';}
+      }else{
+        cmd+=data;
+      }
+    }
+    if(op.debug){console.log('cmd='+cmd);}
+    if(op.debug!='just'){
+      try{return Cp.execSync(cmd);}
+      catch(err){console.log('err='+err); return false;}
+    }
   }
 };
