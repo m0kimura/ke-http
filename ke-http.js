@@ -29,10 +29,10 @@ module.exports=class keServer extends keUtility {
   }
   /**
   * トランザクション処理
-  * @param  {string} msg webhookメッセージ
-  * @param  {string} msg webhookメッセージ
-  * @param  {string} msg webhookメッセージ
-  * @return {void}     none
+  * @param  {String} msg webhookメッセージ
+  * @param  {Object} req リクエストオブジェクト
+  * @param  {Object} res レスポンスオブジェクト
+  * @return {void}       none
   * @method
   */
   transaction(me, req, res) {
