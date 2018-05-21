@@ -120,7 +120,7 @@ module.exports=class keServer extends keUtility {
     }
     cmd+=' -H "'+'Content-Type: '+op.type+'; charset='+op.charset+'"';
     for(ix in op){
-      switch(op[ix]){
+      switch(ix){
       case 'header':
         for(iy in op[ix]){
           cmd+=' -H "'+op[ix][iy]+'"';
